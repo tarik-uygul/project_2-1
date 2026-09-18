@@ -1,0 +1,40 @@
+package com.example.Deck;
+
+public class Card {
+    public enum Suit {
+        Spades,
+        Hearts,
+        Diamonds,
+        Clubs
+    }
+    public enum Rank {
+        Two,
+        Three,
+        Four,
+        Five,
+        Six,
+        Seven,
+        Eight,
+        Nine,
+        Jack,
+        Queen,
+        King,
+        Ace
+    }
+
+    private Rank rank;
+    private Suit suit;
+
+    public Card(Rank rank, Suit suit){
+        this.rank = rank;
+        this.suit = suit;
+    }
+
+    public Rank getRank(){
+        return this.rank;
+    }
+    
+    public Suit getSuit(){
+        return this.suit;
+    }
+}
