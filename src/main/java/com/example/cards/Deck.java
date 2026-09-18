@@ -1,4 +1,4 @@
-package com.example.Deck;
+package com.example.cards;
 
 import java.util.ArrayList;
 

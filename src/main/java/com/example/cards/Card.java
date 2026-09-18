@@ -1,4 +1,4 @@
-package com.example.Deck;
+package com.example.cards;
 
 public class Card {
     public enum Suit {
