@@ -6,8 +6,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 public class DesktopLauncher {
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setTitle("My libGDX Game");
-        config.setWindowedMode(800, 600);
-        new Lwjgl3Application(new GameMain(), config);
+        config.setTitle("Hearts");
+        config.setWindowedMode(1280, 720);
+        new Lwjgl3Application(new HeartsGame(), config);
     }
 }

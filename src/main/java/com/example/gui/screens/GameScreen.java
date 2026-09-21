@@ -1,94 +1,69 @@
 package com.example.gui.screens;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.example.card.Card;
 import com.example.gui.HeartsGame;
-import com.example.gui.skin.Palette;
+import com.example.gui.state.GameActions;
 import com.example.gui.state.GameStateView;
 import com.example.gui.widgets.CardActor;
+import com.example.gui.widgets.TableBoard;
 import com.example.gui.widgets.TurnGateOverlay;
 
 import java.util.List;
 
 /**
- * Board rendering built only against GameStateView (Handoff Point #2) -
- * never touches com.example.game.GameState directly, so this keeps
- * working once Person B's real implementation replaces DemoGameStateView.
- * Hosts the TurnGateOverlay per Handoff Point #1.
+ * Four people on one laptop: the table is always drawn from the point of
+ * view of whoever's turn it is, and every turn starts behind a gate so the
+ * previous player's hand isn't visible. Clicking a card asks the game
+ * logic to play it (GameActions.playCard); the screen then re-reads
+ * GameStateView. Handoff Points #1 and #2 in hearts-gui-decisions.md.
  */
 public class GameScreen extends AbstractScreen {
 
     private final GameStateView stateView;
-    private final Runnable advanceTurnDemo;
+    private final GameActions actions;
     private final TurnGateOverlay turnGate;
-    private final Label turnLabel;
-    private final Label[] opponentLabels;
-    private final Label[] scoreLabels;
+    private Label invalidMoveLabel;
 
-    public GameScreen(HeartsGame game, GameStateView stateView, Runnable advanceTurnDemo) {
+    public GameScreen(HeartsGame game, GameStateView stateView, GameActions actions) {
         super(game);
         this.stateView = stateView;
-        this.advanceTurnDemo = advanceTurnDemo;
+        this.actions = actions;
 
-        Label title = new Label("Hearts", skin, "title");
-        turnLabel = new Label("", skin);
+        turnGate = new TurnGateOverlay(skin);
+        stage.addActor(turnGate);
 
-        Table opponentsRow = new Table();
-        opponentsRow.defaults().pad(6f).width(160f);
-        opponentLabels = new Label[stateView.getPlayerCount()];
-        for (int i = 1; i < stateView.getPlayerCount(); i++) {
-            Label label = new Label("", skin);
-            opponentLabels[i] = label;
-            opponentsRow.add(label);
+        showTurn();
+    }
+
+    /** Rebuilds the table for whoever's turn it is now and gates it until they tap. */
+    private void showTurn() {
+        int current = stateView.getCurrentPlayerIndex();
+        String name = stateView.getPlayerName(current);
+
+        root.clear();
+        TableBoard board = new TableBoard(skin, stateView, current);
+        board.setHighlighted(current);
+
+        for (CardActor card : board.getHandCards()) {
+            card.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    onCardClicked(card, current);
+                }
+            });
         }
 
-        Table trickRow = new Table();
-        trickRow.defaults().pad(6f);
-        List<Card> trickCards = stateView.getCurrentTrickCards();
-        List<Integer> trickPlayers = stateView.getCurrentTrickPlayers();
-        if (trickCards.isEmpty()) {
-            trickRow.add(new Label("No cards played yet", skin));
-        } else {
-            for (int i = 0; i < trickCards.size(); i++) {
-                String cardLabel = stateView.getPlayerName(trickPlayers.get(i)) + "'s card";
-                trickRow.add(new CardActor(trickCards.get(i), cardLabel, skin)).size(100f, 60f);
-            }
-        }
+        Label turnLabel = new Label(name + ", play a card", skin, "gold");
+        invalidMoveLabel = new Label("", skin, "invalid");
 
-        HorizontalGroup handGroup = new HorizontalGroup();
-        handGroup.space(6f);
-        handGroup.wrap(true);
-        handGroup.rowAlign(Align.center);
-        List<Card> hand = stateView.getPlayerHand(0);
-        for (int i = 0; i < hand.size(); i++) {
-            handGroup.addActor(new CardActor(hand.get(i), "Card " + (i + 1), skin));
-        }
-
-        Table scoresRow = new Table();
-        scoresRow.defaults().pad(6f).width(160f);
-        scoreLabels = new Label[stateView.getPlayerCount()];
-        for (int i = 0; i < stateView.getPlayerCount(); i++) {
-            Label label = new Label("", skin);
-            scoreLabels[i] = label;
-            scoresRow.add(label);
-        }
-
-        TextButton nextTurnButton = new TextButton("Next Turn (demo)", skin);
-        nextTurnButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                advanceTurnDemo.run();
-                refreshTurnState();
-            }
-        });
-
-        TextButton endRoundButton = new TextButton("End Round", skin);
+        TextButton endRoundButton = new TextButton("End Round (demo)", skin);
         endRoundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -96,39 +71,37 @@ public class GameScreen extends AbstractScreen {
             }
         });
 
-        Table buttonRow = new Table();
-        buttonRow.defaults().pad(6f);
-        buttonRow.add(nextTurnButton).width(220f).height(50f);
-        buttonRow.add(endRoundButton).width(220f).height(50f);
+        Table center = board.getCenter();
+        center.add(turnLabel).padBottom(14f).row();
+        center.add(buildTrick()).padBottom(8f).row();
+        center.add(invalidMoveLabel).height(30f).padBottom(8f).row();
+        center.add(endRoundButton).width(240f).height(50f);
 
-        root.defaults().pad(8f);
-        root.add(title).padBottom(6f).row();
-        root.add(opponentsRow).row();
-        root.add(turnLabel).padTop(6f).row();
-        root.add(trickRow).padTop(6f).row();
-        root.add(handGroup).width(VIRTUAL_WIDTH - 100f).padTop(6f).row();
-        root.add(scoresRow).padTop(6f).row();
-        root.add(buttonRow).padTop(6f);
-
-        turnGate = new TurnGateOverlay(skin);
-        stage.addActor(turnGate);
-
-        refreshTurnState();
+        root.add(board).grow().pad(8f);
+        turnGate.show(name + "'s turn");
     }
 
-    private void refreshTurnState() {
-        int current = stateView.getCurrentPlayerIndex();
-        boolean localTurn = current == 0;
-        turnLabel.setText(localTurn ? "Your turn!" : stateView.getPlayerName(current) + "'s turn");
-        turnLabel.setColor(localTurn ? Palette.YOUR_TURN : Palette.TEXT_ON_DARK);
-
-        for (int i = 1; i < stateView.getPlayerCount(); i++) {
-            opponentLabels[i].setText(stateView.getPlayerName(i) + ": " + stateView.getHandSize(i) + " cards");
+    private Table buildTrick() {
+        Table trick = new Table();
+        trick.defaults().pad(6f);
+        List<Card> cards = stateView.getCurrentTrickCards();
+        List<Integer> players = stateView.getCurrentTrickPlayers();
+        if (cards.isEmpty()) {
+            trick.add(new Label("No cards played yet", skin)).height(126f);
+        } else {
+            for (int i = 0; i < cards.size(); i++) {
+                String playedBy = stateView.getPlayerName(players.get(i));
+                trick.add(new CardActor(cards.get(i), playedBy, skin)).size(100f, 126f);
+            }
         }
-        for (int i = 0; i < stateView.getPlayerCount(); i++) {
-            scoreLabels[i].setText(stateView.getPlayerName(i) + ": " + stateView.getPlayerScore(i));
-        }
+        return trick;
+    }
 
-        turnGate.showFor(stateView.getPlayerName(current));
+    private void onCardClicked(CardActor clicked, int player) {
+        if (actions.playCard(player, clicked.getCard())) {
+            showTurn();
+        } else {
+            invalidMoveLabel.setText("That card can't be played.");
+        }
     }
 }

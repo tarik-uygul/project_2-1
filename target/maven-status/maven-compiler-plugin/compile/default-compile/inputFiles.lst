@@ -1,4 +1,26 @@
-C:\Users\alisa\Desktop\dsai1\src\main\java\com\example\player\Player.java
-C:\Users\alisa\Desktop\dsai1\src\main\java\com\example\game\Game.java
-C:\Users\alisa\Desktop\dsai1\src\main\java\com\example\game\GameState.java
-C:\Users\alisa\Desktop\dsai1\src\main\java\com\example\Main.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/skin/FontFactory.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/RoundEndScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/WelcomeScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/state/DemoGameStateView.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/widgets/CardActor.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/state/GuiSession.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/HeartsGame.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/PassingScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/state/GameStateView.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/GameOverScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/AbstractScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/game/GameState.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/widgets/TurnGateOverlay.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/card/Rank.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/skin/SkinFactory.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/DesktopLauncher.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/player/PlayerState.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/GameScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/game/Game.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/skin/Palette.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/TransitionScreen.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/Main.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/card/Suit.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/player/Player.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/card/Card.java
+/Users/sophiasieder/Maastricht University/Bsc DSAI/DSAI Year 3/Project 2-1/Code/src/main/java/com/example/gui/screens/SetupScreen.java

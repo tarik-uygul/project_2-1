@@ -5,10 +5,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 
 /**
  * Builds the Skin every screen shares, styled to the felt-table palette
@@ -30,8 +30,22 @@ public final class SkinFactory {
         skin.add("title-font", titleFont);
         skin.add("body-font", bodyFont);
 
+        BitmapFont headingFont = FontFactory.createHeadingFont();
+        skin.add("heading-font", headingFont);
+
         skin.add("title", new Label.LabelStyle(titleFont, Palette.TEXT_ON_DARK));
         skin.add("default", new Label.LabelStyle(bodyFont, Palette.TEXT_ON_DARK));
+
+        // Highlight for whoever's turn it is (the palette's "your turn" gold).
+        skin.add("gold", new Label.LabelStyle(bodyFont, Palette.YOUR_TURN));
+
+        skin.add("invalid", new Label.LabelStyle(bodyFont, Palette.INVALID_MOVE));
+
+        // Dark variants for text sitting on the light (TEXT_ON_DARK) panels,
+        // where the default light label color would be invisible.
+        skin.add("title-dark", new Label.LabelStyle(titleFont, Palette.TABLE_BACKGROUND));
+        skin.add("heading-dark", new Label.LabelStyle(headingFont, Palette.TABLE_BACKGROUND));
+        skin.add("dark", new Label.LabelStyle(bodyFont, Palette.TABLE_BACKGROUND));
 
         // Primary buttons use gold ("your turn" in the palette) as the
         // call-to-action accent - there's no separate "primary action" color,
@@ -57,11 +71,12 @@ public final class SkinFactory {
         textFieldStyle.selection = skin.newDrawable("white", Palette.SELECTED_CARD.cpy().mul(1f, 1f, 1f, 0.6f));
         skin.add("default", textFieldStyle);
 
-        Window.WindowStyle windowStyle = new Window.WindowStyle();
-        windowStyle.titleFont = bodyFont;
-        windowStyle.titleFontColor = Palette.TABLE_BACKGROUND;
-        windowStyle.background = skin.newDrawable("white", Palette.TEXT_ON_DARK);
-        skin.add("default", windowStyle);
+        ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        scrollPaneStyle.vScroll = skin.newDrawable("white", Palette.TEXT_ON_DARK.cpy().mul(0.85f, 0.85f, 0.8f, 1f));
+        scrollPaneStyle.vScrollKnob = skin.newDrawable("white", Palette.TABLE_BACKGROUND);
+        scrollPaneStyle.vScroll.setMinWidth(10f);
+        scrollPaneStyle.vScrollKnob.setMinWidth(10f);
+        skin.add("default", scrollPaneStyle);
 
         return skin;
     }

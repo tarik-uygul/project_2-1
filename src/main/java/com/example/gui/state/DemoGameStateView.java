@@ -3,51 +3,61 @@ package com.example.gui.state;
 import com.example.card.Card;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Static placeholder GameStateView so GameScreen/RoundEndScreen/
- * GameOverScreen have real data to render against (Handoff Point #2 in
- * hearts-gui-decisions.md) while com.example.game.GameState is still an
- * empty stub. Card itself has no rank/suit accessors yet either, so hands
- * are just anonymous Card instances - real card faces are Person A's art
- * plus Person B's data, not something the GUI can fabricate correctly.
- * Delete this class once GameState implements GameStateView for real.
+ * Placeholder GameStateView + GameActions so the screens have something to
+ * run against while com.example.game.GameState is still an empty stub. It
+ * enforces NO rules: any card can be played, passed cards are only recorded
+ * (hands don't change), tricks aren't scored. Card has no rank/suit yet
+ * either, so hands are anonymous Card instances. Delete this class once the
+ * real game logic implements the two interfaces.
  */
-public class DemoGameStateView implements GameStateView {
+public class DemoGameStateView implements GameStateView, GameActions {
+
+    private static final int PLAYERS = 4;
+    private static final int HAND_SIZE = 13;
 
     private final List<String> names;
-    private final List<Card> localHand;
-    private final int[] handSizes;
-    private final int[] scores;
-    private final List<Card> trickCards;
-    private final List<Integer> trickPlayers;
-    private int currentPlayerIndex = 0;
+    private final int[] scores = {12, 20, 5, 30};
+    private final List<List<Card>> hands = new ArrayList<>();
+    private final List<List<Card>> passed = new ArrayList<>();
+    private final List<Card> trickCards = new ArrayList<>();
+    private final List<Integer> trickPlayers = new ArrayList<>();
+    private int currentPlayerIndex;
+    private int round;
 
-    public DemoGameStateView(String localPlayerName) {
-        names = Arrays.asList(localPlayerName, "Alex", "Sam", "Robin");
-
-        localHand = new ArrayList<>();
-        for (int i = 0; i < 13; i++) {
-            localHand.add(new Card());
-        }
-
-        handSizes = new int[] {13, 13, 13, 13};
-        scores = new int[] {12, 20, 5, 30};
-
-        trickCards = Arrays.asList(new Card(), new Card());
-        trickPlayers = Arrays.asList(1, 2);
+    public DemoGameStateView(List<String> names) {
+        this.names = new ArrayList<>(names);
+        deal();
     }
 
-    public void advanceTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % getPlayerCount();
+    /** Fresh hands for the next round; the pass direction rotates left, right, across, none. */
+    public void startNextRound() {
+        round++;
+        deal();
+    }
+
+    private void deal() {
+        hands.clear();
+        passed.clear();
+        for (int p = 0; p < PLAYERS; p++) {
+            List<Card> hand = new ArrayList<>();
+            for (int i = 0; i < HAND_SIZE; i++) {
+                hand.add(new Card());
+            }
+            hands.add(hand);
+            passed.add(new ArrayList<>());
+        }
+        trickCards.clear();
+        trickPlayers.clear();
+        currentPlayerIndex = 0;
     }
 
     @Override
     public int getPlayerCount() {
-        return names.size();
+        return PLAYERS;
     }
 
     @Override
@@ -57,12 +67,12 @@ public class DemoGameStateView implements GameStateView {
 
     @Override
     public List<Card> getPlayerHand(int playerIndex) {
-        return playerIndex == 0 ? localHand : Collections.emptyList();
+        return hands.get(playerIndex);
     }
 
     @Override
     public int getHandSize(int playerIndex) {
-        return handSizes[playerIndex];
+        return hands.get(playerIndex).size();
     }
 
     @Override
@@ -83,5 +93,50 @@ public class DemoGameStateView implements GameStateView {
     @Override
     public int getPlayerScore(int playerIndex) {
         return scores[playerIndex];
+    }
+
+    @Override
+    public int getPassTarget(int playerIndex) {
+        switch (round % 4) {
+            case 0:
+                return (playerIndex + 1) % PLAYERS;
+            case 1:
+                return (playerIndex + 3) % PLAYERS;
+            case 2:
+                return (playerIndex + 2) % PLAYERS;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public List<Card> getReceivedCards(int playerIndex) {
+        for (int source = 0; source < PLAYERS; source++) {
+            if (getPassTarget(source) == playerIndex) {
+                return Collections.unmodifiableList(passed.get(source));
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void passCards(int playerIndex, List<Card> cards) {
+        passed.set(playerIndex, new ArrayList<>(cards));
+    }
+
+    @Override
+    public boolean playCard(int playerIndex, Card card) {
+        if (playerIndex != currentPlayerIndex || !hands.get(playerIndex).remove(card)) {
+            return false;
+        }
+        // A finished trick stays visible until the next card starts a new one.
+        if (trickCards.size() == PLAYERS) {
+            trickCards.clear();
+            trickPlayers.clear();
+        }
+        trickCards.add(card);
+        trickPlayers.add(playerIndex);
+        currentPlayerIndex = (currentPlayerIndex + 1) % PLAYERS;
+        return true;
     }
 }

@@ -17,8 +17,8 @@ import com.example.gui.state.GuiSession;
 
 /**
  * Owns the shared SpriteBatch/Skin and the screen-order state machine:
- * Welcome -> Setup -> Passing -> Game -> RoundEnd -> (loop to Game, or
- * GameOver) -> Play Again -> Welcome. Screens call the show*() methods
+ * Welcome -> Setup -> Passing -> Game -> RoundEnd -> (next round: back to
+ * Passing, or GameOver) -> Play Again -> Welcome. screens call the show*() methods
  * here rather than knowing about each other directly.
  */
 public class HeartsGame extends Game {
@@ -59,16 +59,29 @@ public class HeartsGame extends Game {
     }
 
     public void showSetup() {
+        demoState = null;
         setScreen(new SetupScreen(this));
     }
 
+    /** Starts the passing phase, or goes straight to play on a no-passing round. */
     public void showPassing() {
-        demoState = new DemoGameStateView(session.getPlayerName());
-        setScreen(new PassingScreen(this, demoState));
+        if (demoState == null) {
+            demoState = new DemoGameStateView(session.getPlayerNames());
+        }
+        if (demoState.getPassTarget(0) < 0) {
+            showGame();
+            return;
+        }
+        setScreen(new PassingScreen(this, demoState, demoState));
+    }
+
+    public void showNextRound() {
+        demoState.startNextRound();
+        showPassing();
     }
 
     public void showGame() {
-        setScreen(new GameScreen(this, demoState, demoState::advanceTurn));
+        setScreen(new GameScreen(this, demoState, demoState));
     }
 
     public void showRoundEnd() {

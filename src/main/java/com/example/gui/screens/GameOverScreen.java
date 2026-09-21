@@ -53,4 +53,9 @@ public class GameOverScreen extends AbstractScreen {
         root.add(scoreTable).padBottom(30f).row();
         root.add(playAgainButton).width(220f).height(60f);
     }
+
+    @Override
+    boolean slidesInFlow() {
+        return false;
+    }
 }

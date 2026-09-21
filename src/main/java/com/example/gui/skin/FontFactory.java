@@ -19,12 +19,18 @@ public final class FontFactory {
     private static final String TITLE_FONT_PATH = "fonts/title.ttf";
     private static final String BODY_FONT_PATH = "fonts/body.ttf";
     private static final int TITLE_SIZE_PX = 48;
+    private static final int HEADING_SIZE_PX = 28;
     private static final int BODY_SIZE_PX = 22;
 
     private FontFactory() {}
 
     public static BitmapFont createTitleFont() {
         return generate(TITLE_FONT_PATH, TITLE_SIZE_PX);
+    }
+
+    /** Smaller size of the display face, for section headings inside panels. */
+    public static BitmapFont createHeadingFont() {
+        return generate(TITLE_FONT_PATH, HEADING_SIZE_PX);
     }
 
     public static BitmapFont createBodyFont() {
@@ -34,6 +40,7 @@ public final class FontFactory {
     private static BitmapFont generate(String path, int sizePx) {
         FileHandle file = Gdx.files.internal(path);
         if (!file.exists()) {
+            Gdx.app.error("FontFactory", path + " not found - using fallback font");
             BitmapFont fallback = new BitmapFont();
             fallback.getData().setScale(sizePx / 16f);
             fallback.setColor(Palette.TEXT_ON_DARK);

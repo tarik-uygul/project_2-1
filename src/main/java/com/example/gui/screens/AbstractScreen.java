@@ -72,9 +72,25 @@ public abstract class AbstractScreen implements Screen {
         root.getColor().a = alpha;
     }
 
-    /** Entry point for HeartsGame.setScreen() to cross-fade between two screens. */
+    /** Horizontal shift of the whole screen's content, used by TransitionScreen for sliding. */
+    void setContentOffsetX(float x) {
+        stage.getRoot().setX(x);
+    }
+
+    /**
+     * Whether this screen is part of the main Welcome -> Setup -> Passing ->
+     * Game flow, which slides between screens. Screens that override this to
+     * false (round end, game over) fade instead - a slide only makes sense
+     * between two flow screens.
+     */
+    boolean slidesInFlow() {
+        return true;
+    }
+
+    /** Entry point for HeartsGame.setScreen(): slides between two flow screens, fades otherwise. */
     public static Screen transitionTo(AbstractScreen from, AbstractScreen to, Runnable onComplete) {
-        return new TransitionScreen(from, to, onComplete);
+        boolean slide = from.slidesInFlow() && to.slidesInFlow();
+        return new TransitionScreen(from, to, slide, onComplete);
     }
 
     @Override

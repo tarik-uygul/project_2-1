@@ -21,7 +21,7 @@ Only introduce colors if you update this doc!
 ## 3. Typography
 
 Only one display face, one UI face — no third fonts without updating this doc.
-
+Cinzel Bold for titles and headings (48px and 28px) and Inter Tight Regular for body text (22px)
 Import both as `.ttf`, generate `BitmapFont`s via libGDX's FreeType extension (`gdx-freetype`) so text stays crisp at the target resolution instead of pixelating.
 
 ## 4. Viewport & Resolution
@@ -60,17 +60,26 @@ TurnGateScreen renders as an overlay on top of GameScreen (a semi-transparent "P
 
 Agree on a minimal read-only interface GameScreen pulls from: current trick (cards played this round + who played them), each player's hand size (not contents, for opponents), whose turn it is, and current scores. Person A builds GameScreen's rendering against this interface; Person B's engine just needs to keep it updated. Write this as a short list of fields/getters in the shared doc so neither of you guesses at the other's data shape.
 
-Defined as `com.example.gui.state.GameStateView` (GUI side, `src/main/java/com/example/gui/state/GameStateView.java`). Convention: `playerIndex` 0 is always the local/human player. GameScreen renders against this interface only:
+Four real people share one laptop (hot-seat), so there is no single "local" player: the GUI draws the table from the point of view of whoever is sitting at the laptop and hides everything behind a "X's turn - tap to reveal" gate between players. Two interfaces in `com.example.gui.state` are the whole contract; the GUI never changes game state itself.
+
+**`GameStateView` (read-only, GUI reads):**
 
 - `int getPlayerCount()`
 - `String getPlayerName(int playerIndex)`
-- `List<Card> getPlayerHand(int playerIndex)` — full contents, local player only
-- `int getHandSize(int playerIndex)` — count only, used for opponents
-- `int getCurrentPlayerIndex()` — whose turn it is
-- `List<Card> getCurrentTrickCards()` / `List<Integer> getCurrentTrickPlayers()` — parallel lists, cards played this trick and who played each
+- `List<Card> getPlayerHand(int playerIndex)` - full contents; the GUI only asks for the player currently at the laptop
+- `int getHandSize(int playerIndex)` - shown to everyone else as face-down cards
+- `int getCurrentPlayerIndex()` - whose turn it is
+- `List<Card> getCurrentTrickCards()` / `List<Integer> getCurrentTrickPlayers()` - parallel lists, cards played this trick and who played each. A finished trick should stay visible until the next card starts a new one (the next player sees it behind the gate)
 - `int getPlayerScore(int playerIndex)`
+- `int getPassTarget(int playerIndex)` - who this player passes to this round, or -1 on a no-passing round (the GUI then skips passing)
+- `List<Card> getReceivedCards(int playerIndex)` - the 3 cards received in passing
 
-Person B implements this on top of the real `GameState`/`PlayerState` classes; the GUI never mutates state through it, only reads.
+**`GameActions` (GUI calls, logic implements):**
+
+- `void passCards(int playerIndex, List<Card> cards)` - player picked these 3 cards
+- `boolean playCard(int playerIndex, Card card)` - false = rejected, the GUI shows an "invalid move" message
+
+**Flow the GUI runs:** Setup (4 names) -> for each player: gate, pick 3, Confirm -> for each player: gate, see the 3 received cards -> play (each turn behind a gate) -> Round End -> next round starts with passing again. `DemoGameStateView` implements both interfaces with no rules, as a stand-in until the real game logic does; delete it then.
 
 ### 3. PassingScreen reuses Person A's card component
 

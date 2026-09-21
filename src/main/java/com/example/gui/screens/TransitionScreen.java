@@ -2,34 +2,38 @@ package com.example.gui.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.math.Interpolation;
 
 /**
- * Cross-fades from one AbstractScreen to another over `duration` seconds,
- * then hands off to the target screen permanently. Every screen is
- * already Scene2D, so this just renders both Stages in the same frame
- * with opposite alpha ramps (via AbstractScreen.setContentAlpha) rather
- * than capturing pixels to an FBO.
+ * Transitions from one AbstractScreen to another, then hands off to the
+ * target screen permanently. Every screen is already Scene2D, so this
+ * renders both Stages in the same frame - no FBO pixel capture needed.
+ * Either cross-fades (opposite alpha ramps) or slides (incoming screen
+ * enters from the right while the outgoing one leaves to the left).
  */
 class TransitionScreen implements Screen {
 
-    private static final float DEFAULT_DURATION = 0.35f;
+    private static final float FADE_DURATION = 0.35f;
+    private static final float SLIDE_DURATION = 0.4f;
 
     private final AbstractScreen from;
     private final AbstractScreen to;
+    private final boolean slide;
     private final float duration;
     private final Runnable onComplete;
     private float elapsed = 0f;
 
-    TransitionScreen(AbstractScreen from, AbstractScreen to, Runnable onComplete) {
-        this(from, to, DEFAULT_DURATION, onComplete);
-    }
-
-    TransitionScreen(AbstractScreen from, AbstractScreen to, float duration, Runnable onComplete) {
+    TransitionScreen(AbstractScreen from, AbstractScreen to, boolean slide, Runnable onComplete) {
         this.from = from;
         this.to = to;
-        this.duration = duration;
+        this.slide = slide;
+        this.duration = slide ? SLIDE_DURATION : FADE_DURATION;
         this.onComplete = onComplete;
-        to.setContentAlpha(0f);
+        if (slide) {
+            to.setContentOffsetX(AbstractScreen.VIRTUAL_WIDTH);
+        } else {
+            to.setContentAlpha(0f);
+        }
     }
 
     @Override
@@ -37,8 +41,14 @@ class TransitionScreen implements Screen {
         elapsed += delta;
         float t = Math.min(elapsed / duration, 1f);
 
-        from.setContentAlpha(1f - t);
-        to.setContentAlpha(t);
+        if (slide) {
+            float eased = Interpolation.smooth.apply(t);
+            from.setContentOffsetX(-AbstractScreen.VIRTUAL_WIDTH * eased);
+            to.setContentOffsetX(AbstractScreen.VIRTUAL_WIDTH * (1f - eased));
+        } else {
+            from.setContentAlpha(1f - t);
+            to.setContentAlpha(t);
+        }
 
         from.clear();
         from.act(delta);

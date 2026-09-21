@@ -32,7 +32,7 @@ public class RoundEndScreen extends AbstractScreen {
         nextRoundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.showGame();
+                game.showNextRound();
             }
         });
 
@@ -49,5 +49,10 @@ public class RoundEndScreen extends AbstractScreen {
         root.add(scoreTable).colspan(2).padBottom(30f).row();
         root.add(nextRoundButton).width(220f).height(60f).padRight(10f);
         root.add(finishMatchButton).width(220f).height(60f);
+    }
+
+    @Override
+    boolean slidesInFlow() {
+        return false;
     }
 }
