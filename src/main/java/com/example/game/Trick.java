@@ -2,24 +2,53 @@ package com.example.game;
 
 import java.util.ArrayList;
 
-import com.example.Deck.Card;
+import com.example.cards.*;
+import com.example.player.Player;
 
 public class Trick {
-    private ArrayList<Card> trick = new ArrayList<>();
-    public Trick(ArrayList<Card> trick){
-        this.trick = trick;
+
+    private ArrayList<Play> plays = new ArrayList<>();
+
+    public void addPlay(Play play){
+        plays.add(play);
     }
-    
-    public void addCard(Card card){
-        trick.add(card);
+
+    public Card.Suit getTrickSuit() {
+        return plays.get(0).getCard().getSuit();
     }
-    public Card.Suit getTrickSuit(){
-        return trick.get(0).getSuit();
+
+    /**
+     * This method iterates through all the plays in the trick and their points. 
+     * @return the amount of accumlated points.
+     */
+    public int countTrickPoints(){
+        int points = 0;
+        for(Play play : plays){
+            if(play.getCard().getSuit() == Card.Suit.HEARTS){
+                points++;
+            } else if(play.getCard().getSuit() == Card.Suit.SPADES && play.getCard().getRank() == Card.Rank.QUEEN){
+                points += 13;
+            }
+        }
+        return points;
     }
-    public int countTrickPoints(){//Hearts 1 pt Queen of Spades 13 pts
-        return 0; //should we even count in Trick class?
+
+
+    public Player getLeader() {
+    // TODO: return the player who played the highest card of the lead suit
+    return null;
+    }  
+
+    public boolean isComplete(int numOfPlayers){
+        return plays.size() == numOfPlayers;
     }
-    public ArrayList<Card> getTrick(){
-        return trick;
+
+    public ArrayList<Play> getTrick(){
+        return plays; //though i dont know about this, will the AI be able to change it later? I will have to look into it, if so
+        // i will just simply again return a shallow copy - like i did in Hand.
+    }
+
+    public boolean isEmpty(){
+        return plays.isEmpty();
     }
 }

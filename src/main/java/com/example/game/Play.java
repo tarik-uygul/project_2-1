@@ -1,0 +1,17 @@
+package com.example.game;
+
+import com.example.cards.Card;
+import com.example.player.Player;
+
+public class Play {
+    private Player player;
+    private Card card;
+    
+    public Play(Player player, Card card){
+        this.player = player;
+        this.card = card;
+    }
+
+    public Player getPlayer(){ return player; }
+    public Card getCard(){ return card; }
+}

@@ -1,25 +1,28 @@
 package com.example.cards;
 
 public class Card {
+
     public enum Suit {
-        Spades,
-        Hearts,
-        Diamonds,
-        Clubs
+        SPADES,
+        HEARTS,
+        DIAMONDS,
+        CLUBS
     }
+    
     public enum Rank {
-        Two,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine,
-        Jack,
-        Queen,
-        King,
-        Ace
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
+        SIX,
+        SEVEN,
+        EIGHT,
+        NINE,
+        TEN,
+        JACK,
+        QUEEN,
+        KING,
+        ACE
     }
 
     private Rank rank;
@@ -36,5 +39,10 @@ public class Card {
     
     public Suit getSuit(){
         return this.suit;
+    }
+
+    @Override
+    public String toString(){
+        return rank + " of " + suit;
     }
 }
