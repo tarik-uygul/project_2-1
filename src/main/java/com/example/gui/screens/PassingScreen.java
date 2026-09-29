@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.example.card.Card;
+import com.example.cards.Card;
 import com.example.gui.HeartsGame;
 import com.example.gui.skin.Palette;
 import com.example.gui.state.GameActions;

@@ -1,6 +1,6 @@
 package com.example.gui.state;
 
-import com.example.card.Card;
+import com.example.cards.Card;
 
 import java.util.List;
 

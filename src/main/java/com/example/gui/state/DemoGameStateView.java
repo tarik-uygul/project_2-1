@@ -1,6 +1,7 @@
 package com.example.gui.state;
 
-import com.example.card.Card;
+import com.example.cards.Card;
+import com.example.cards.Deck;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,20 +41,25 @@ public class DemoGameStateView implements GameStateView, GameActions {
     }
 
     private void deal() {
-        hands.clear();
-        passed.clear();
-        for (int p = 0; p < PLAYERS; p++) {
-            List<Card> hand = new ArrayList<>();
-            for (int i = 0; i < HAND_SIZE; i++) {
-                hand.add(new Card());
-            }
-            hands.add(hand);
-            passed.add(new ArrayList<>());
-        }
-        trickCards.clear();
-        trickPlayers.clear();
-        currentPlayerIndex = 0;
+    hands.clear();
+    passed.clear();
+    
+    // 1. Initialize the 52-card deck and shuffle it using your teammate's methods
+    Deck gameDeck = new Deck();
+    gameDeck.shuffle();
+    
+    for (int p = 0; p < PLAYERS; p++) {
+        // 2. Use the deck's deal method to pull exactly HAND_SIZE (usually 13) cards
+        List<Card> hand = gameDeck.deal(HAND_SIZE); 
+        
+        hands.add(hand);
+        passed.add(new ArrayList<>());
     }
+    
+    trickCards.clear();
+    trickPlayers.clear();
+    currentPlayerIndex = 0;
+}
 
     @Override
     public int getPlayerCount() {
